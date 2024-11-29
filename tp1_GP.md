@@ -1,5 +1,4 @@
-# I. Service SSH lalala
-ss
+# I. Service SSH 
 🌞 **S'assurer que le service `sshd` est démarré**
 
 ```
