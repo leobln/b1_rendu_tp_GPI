@@ -10,31 +10,52 @@
 
 🌞 **Analyser les processus liés au service SSH**
 
-
+```
+[leobln@web ~]$ ps aux | grep sshd
+root        1537  0.0  0.5  16800  9216 ?        Ss   15:34   0:00 sshd: /usr/sbin/sshd -D [listener] 0 of 10-100 startups
+root        1587  0.0  0.6  20156 11392 ?        Ss   15:42   0:00 sshd: leobln [priv]
+leobln      1591  0.0  0.3  20352  6796 ?        S    15:42   0:00 sshd: leobln@pts/0
+leobln      1620  0.0  0.1   6408  2304 pts/0    S+   15:44   0:00 grep --color=auto sshd
+```
 
 🌞 **Déterminer le port sur lequel écoute le service SSH**
 
-- avec une commande `ss`
-  - il faudra ajouter des options à la commandes `ss` pour que ce soit des infos plus lisibles (encore une fois, [voir le mémoooooo y'a des exemples de commandes](../../cours/memo/shell.md).
-- isolez les lignes intéressantes avec un `| grep <TEXTE>`
+```
+[leobln@web ~]$ ss -tuln | grep 22
+tcp   LISTEN 0      128          0.0.0.0:22        0.0.0.0:*
+tcp   LISTEN 0      128             [::]:22           [::]:*
+```
 
 🌞 **Consulter les logs du service SSH**
 
-- les logs du service sont consultables avec une commande `journalctl`
-  - donnez une commande `journalctl` qui permet de consulter les logs du service SSH
-- AUSSI, il existe un fichier de log, dans lequel le service SSH enregistre toutes les tentatives de connexion
-  - il est dans le dossier `/var/log`
-  - utilisez une commande `tail` pour visualiser les 10 dernière lignes de ce fichier
-
-![When she tells you](./img/when_she_tells_you.png)
+```
+[leobln@web ~]$ sudo journalctl -u sshd -n 10
+Dec 02 15:34:25 web.tp1.b1 systemd[1]: sshd.service: Deactivated successfu>
+Dec 02 15:34:25 web.tp1.b1 systemd[1]: Stopped OpenSSH server daemon.
+Dec 02 15:34:25 web.tp1.b1 systemd[1]: Starting OpenSSH server daemon...
+Dec 02 15:34:25 web.tp1.b1 sshd[1537]: Server listening on 0.0.0.0 port 22.
+Dec 02 15:34:25 web.tp1.b1 sshd[1537]: Server listening on :: port 22.
+Dec 02 15:34:25 web.tp1.b1 systemd[1]: Started OpenSSH server daemon.
+Dec 02 15:35:10 web.tp1.b1 sshd[1551]: Accepted password for leobln from 1>
+Dec 02 15:35:10 web.tp1.b1 sshd[1551]: pam_unix(sshd:session): session ope>
+Dec 02 15:42:31 web.tp1.b1 sshd[1587]: Accepted password for leobln from 1>
+Dec 02 15:42:31 web.tp1.b1 sshd[1587]: pam_unix(sshd:session): session ope>
+[leobln@web ~]$ sudo tail -n 10 /var/log/auth.log
+tail: cannot open '/var/log/auth.log' for reading: No such file or directory
+[leobln@web ~]$ sudo tail -n 10 /var/log/secure
+Dec  2 15:50:37 web sudo[1630]: pam_unix(sudo:session): session opened for user root(uid=0) by leobln(uid=1000)
+Dec  2 15:50:44 web sudo[1630]: pam_unix(sudo:session): session closed for user root
+Dec  2 15:51:22 web sudo[1636]:  leobln : TTY=pts/0 ; PWD=/home/leobln ; USER=root ; COMMAND=/bin/journalctl -u sshd -n 10
+Dec  2 15:51:22 web sudo[1636]: pam_unix(sudo:session): session opened for user root(uid=0) by leobln(uid=1000)
+Dec  2 15:51:26 web sudo[1636]: pam_unix(sudo:session): session closed for user root
+Dec  2 15:52:10 web sudo[1640]:  leobln : TTY=pts/0 ; PWD=/home/leobln ; USER=root ; COMMAND=/bin/tail -n 10 /var/log/auth.log
+Dec  2 15:52:10 web sudo[1640]: pam_unix(sudo:session): session opened for user root(uid=0) by leobln(uid=1000)
+Dec  2 15:52:10 web sudo[1640]: pam_unix(sudo:session): session closed for user root
+Dec  2 15:52:22 web sudo[1643]:  leobln : TTY=pts/0 ; PWD=/home/leobln ; USER=root ; COMMAND=/bin/tail -n 10 /var/log/secure
+Dec  2 15:52:22 web sudo[1643]: pam_unix(sudo:session): session opened for user root(uid=0) by leobln(uid=1000)
+```
 
 ## 2. Modification du service
-
-Dans cette section, on va aller visiter et modifier le fichier de configuration du serveur SSH.
-
-Comme tout fichier de configuration, celui de SSH se trouve dans le dossier `/etc/`.
-
-Plus précisément, il existe un sous-dossier `/etc/ssh/` qui contient toute la configuration relative à SSH spécifiquement
 
 🌞 **Identifier le fichier de configuration du serveur SSH**
 
