@@ -10,31 +10,7 @@
 
 🌞 **Analyser les processus liés au service SSH**
 
-- afficher les processus liés au service `sshd`
-  - vous pouvez afficher la liste des processus en cours d'exécution avec une commande `ps`
-  - pour rappel "un processus" c'est juste un programme qu'on a "lancé", qui a donc été déplacé en RAM et qui est en cours d'exécution
-  - pour le compte-rendu, vous devez filtrer la sortie de la commande en ajoutant `| grep <TEXTE_RECHERCHE>` après une commande
-    - au cas où un ptit rappel de l'utilisation de `| grep` :
 
-```bash
-# Exemple de manipulation de | grep
-
-# admettons un fichier texte appelé "fichier_demo"
-# on peut afficher son contenu avec la commande cat :
-$ cat fichier_demo
-bob a un chapeau rouge
-emma surfe avec un dinosaure
-eve a pas toute sa tête
-
-# il est possible de filtrer la sortie de la commande cat pour afficher uniquement certaines lignes
-$ cat fichier_demo | grep emma
-emma surfe avec un dinosaure
-
-$ cat fichier_demo | grep bob
-bob a un chapeau rouge
-```
-
-> Il est possible de repérer le numéro des processus liés à un service avec la commande `systemctl status sshd`.
 
 🌞 **Déterminer le port sur lequel écoute le service SSH**
 
@@ -62,21 +38,34 @@ Plus précisément, il existe un sous-dossier `/etc/ssh/` qui contient toute la 
 
 🌞 **Identifier le fichier de configuration du serveur SSH**
 
+```
+[leobln@web ssh]$ ls -l sshd_config
+-rw-------. 1 root root 3667 Nov  5 04:37 sshd_config
+```
+
 🌞 **Modifier le fichier de conf**
 
-- exécutez un `echo $RANDOM` pour **demander à votre shell de vous fournir un nombre aléatoire**
-  - simplement pour vous montrer la petite astuce et vous faire manipuler le shell :)
-  - pour un numéro de port valide, c'est entre 1 et 65535 !
-- **changez le port d'écoute du serveur SSH** pour qu'il écoute sur ce numéro de port
-  - il faut modifier le fichier avec `nano` ou `vim` par exemple
-  - dans le compte-rendu je veux un `cat` du fichier de conf
-  - filtré par un `| grep` pour mettre en évidence la ligne que vous avez modifié
-- **gérer le firewall**
-  - c'est du réseau, donc c'est dans le [Mémo Réseau Rocky](../../cours/memo/rocky.md)
-  - fermer l'ancien port
-  - ouvrir le nouveau port
-  - vérifier avec un `firewall-cmd --list-all` que le port est bien ouvert
-    - vous filtrerez la sortie de la commande avec un `| grep TEXTE`
+```
+[leobln@web ~]$ echo $RANDOM
+12899
+[leobln@web ~]$ sudo nano /etc/ssh/sshd_config
+port 12899
+[leobln@web ~]$ sudo cat /etc/ssh/sshd_config | grep Port
+Port 12899
+#GatewayPorts no
+[leobln@web ~]$ sudo firewall-cmd --permanent --remove-port=22/tcp
+[sudo] password for leobln:
+Warning: NOT_ENABLED: 22:tcp
+success
+[leobln@web ~]$ sudo firewall-cmd --reload
+success
+[leobln@web ~]$ sudo firewall-cmd --permanent --add-port=12899/tcp
+success
+[leobln@web ~]$ sudo firewall-cmd --list-all | grep port
+  ports: 12899/tcp
+  forward-ports:
+  source-ports:
+```
 
 🌞 **Redémarrer le service**
 
