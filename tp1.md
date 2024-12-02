@@ -1,11 +1,11 @@
-# I. Service SSH lalal
+# I. Service SSH
 
 🌞 **S'assurer que le service `sshd` est démarré**
 
 ```
 [leobln@web ~]$ systemctl status
 ● web.tp1.b1
-    State: running aeaer
+    State: running
 ```
 
 🌞 **Analyser les processus liés au service SSH**
