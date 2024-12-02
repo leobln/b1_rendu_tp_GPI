@@ -156,4 +156,105 @@ PS C:\Users\leobln> ssh leobln@10.1.1.1
 leobln@10.1.1.1's password:
 Last login: Mon Dec  2 15:29:22 2024 from 10.1.1.3
 ```
+# II. Service HTTP
+
+🌞 **Installer le serveur NGINX**
+
+- il faut faire une commande `dnf install`
+- pour trouver le paquet à installer :
+  - `dnf search <VOTRE RECHERCHE>`
+  - ou une recherche Google (mais si `dnf search` suffit, c'est useless de faire une recherche pour ça)
+
+🌞 **Démarrer le service NGINX**
+
+🌞 **Déterminer sur quel port tourne NGINX**
+
+- vous devez filtrer la sortie de la commande utilisée pour n'afficher que les lignes demandées
+- ouvrez le port concerné dans le firewall
+
+> **NB : c'est bientôt la dernière fois que je signale explicitement la nécessité d'ouvrir un port dans le firewall.** Vous devrez vous-mêmes y penser lorsque nécessaire. C'est simple en vrai : dès qu'un truc écoute sur un port, faut ouvrir ce port dans le firewall. *Toutes les commandes liées au firewall doivent malgré tout figurer dans les compte-rendus.*
+
+🌞 **Déterminer les processus liés au service NGINX**
+
+- vous devez filtrer la sortie de la commande utilisée pour n'afficher que les lignes demandées
+
+🌞 **Déterminer le nom de l'utilisateur qui lance NGINX**
+
+- vous devriez le voir dans la commande `ps` précédente
+- si l'utilisateur existe, alors il est listé dans le fichier `/etc/passwd`
+  - je veux un `cat /etc/passwd | grep <USER>` pour mettre en évidence l'utilisateur qui lance NGINX
+
+🌞 **Test !**
+
+- visitez le site web
+  - ouvrez votre navigateur (sur votre PC) et visitez `http://<IP_VM>:<PORT>`
+  - vous pouvez aussi (toujours sur votre PC) utiliser la commande `curl` depuis un terminal pour faire une requête HTTP et visiter le site
+- dans le compte-rendu, je veux le `curl` (pas un screen de navigateur)
+  - utilisez Git Bash si vous êtes sous Windows (obligatoire parce que le `curl` de Powershell il fait des dingueries)
+  - vous utiliserez `| head` après le `curl` pour afficher que les 7 premières lignes
+
+## 2. Analyser la conf de NGINX
+
+🌞 **Déterminer le path du fichier de configuration de NGINX**
+
+- faites un `ls -al <PATH_VERS_LE_FICHIER>` pour le compte-rendu
+- la conf c'est dans `/etc/` normalement, comme toujours !
+
+🌞 **Trouver dans le fichier de conf**
+
+- les lignes qui permettent de faire tourner un site web d'accueil (la page moche que vous avez vu avec votre navigateur)
+  - ce que vous cherchez, c'est un bloc `server { }` dans le fichier de conf
+  - vous ferez un `cat <FICHIER> | grep <TEXTE> -A X` pour me montrer les lignes concernées dans le compte-rendu
+    - l'option `-A X` permet d'afficher aussi les `X` lignes après chaque ligne trouvée par `grep`
+- une ligne qui commence par `include`
+  - cette ligne permet d'inclure d'autres fichiers
+  - bah ouais, on stocke pas toute la conf dans un seul fichier, sinon ça serait le bordel
+  - encore un `cat <FICHIER> | grep <TEXTE>` pour ne montrer que cette ligne
+- la ligne qui indique à NGINX qu'il doit s'exécuter en tant qu'un utilisateur spécifique
+
+## 3. Déployer un nouveau site web
+
+🌞 **Créer un site web**
+
+- bon on est pas en cours de design ici, alors on va faire simplissime
+- créer un sous-dossier dans `/var/www/`
+  - par convention, on stocke les sites web dans `/var/www/`
+  - votre dossier doit porter le nom `tp1_parc`
+- dans ce dossier `/var/www/tp1_parc`, créez un fichier `index.html`
+  - il doit contenir `<h1>MEOW mon premier serveur web</h1>`
+
+🌞 **Gérer les permissions**
+
+- tout le contenu du dossier  `/var/www/tp1_parc` doit appartenir à l'utilisateur qui lance NGINX
+
+🌞 **Adapter la conf NGINX**
+
+- dans le fichier de conf principal
+  - vous supprimerez le bloc `server {}` repéré plus tôt pour que NGINX ne serve plus le site par défaut (parce que ça sert à rien le site par défaut)
+  - redémarrez NGINX pour que les changements prennent effet
+- créez un nouveau fichier de conf
+  - il doit être nommé correctement
+  - il doit être placé dans le bon dossier
+  - c'est quoi un "nom correct" et "le bon dossier" ?
+    - bah vous avez repéré dans la partie d'avant les fichiers qui sont inclus par le fichier de conf principal non ?
+    - créez votre fichier en conséquence
+  - redémarrez NGINX pour que les changements prennent effet
+  - le contenu doit être le suivant :
+    - il écoute sur un port que vous aurez déterminé aléatoirement avec `echo $RANDOM`
+      - n'oubliez pas d'ouvrir ce port dans le firewall, et fermer l'ancien
+    - il définit que le site web est stocké dans /var/www/tp1_parc
+
+```nginx
+server {
+  # le port choisi devra être obtenu avec un 'echo $RANDOM' là encore
+  listen <PORT>;
+
+  root /var/www/tp1_parc;
+}
+```
+
+🌞 **Visitez votre super site web**
+
+- toujours avec une commande `curl` depuis votre PC (ou un navigateur)
+
 
