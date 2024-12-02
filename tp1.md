@@ -69,20 +69,51 @@ success
 
 🌞 **Redémarrer le service**
 
-- avec une commande `systemctl restart`
+```
+[leobln@web ~]$ sudo systemctl status sshd
+● sshd.service - OpenSSH server daemon
+     Loaded: loaded (/usr/lib/systemd/system/sshd.service; enabled; preset:>
+     Active: active (running) since Mon 2024-12-02 15:20:08 CET; 31s ago
+       Docs: man:sshd(8)
+             man:sshd_config(5)
+   Main PID: 1486 (sshd)
+      Tasks: 1 (limit: 11083)
+     Memory: 1.4M
+        CPU: 22ms
+     CGroup: /system.slice/sshd.service
+             └─1486 "sshd: /usr/sbin/sshd -D [listener] 0 of 10-100 startup>
+
+Dec 02 15:20:08 web.tp1.b1 systemd[1]: Starting OpenSSH server daemon...
+Dec 02 15:20:08 web.tp1.b1 sshd[1486]: Server listening on 0.0.0.0 port 128>
+Dec 02 15:20:08 web.tp1.b1 sshd[1486]: Server listening on :: port 12899.
+Dec 02 15:20:08 web.tp1.b1 systemd[1]: Started OpenSSH server daemon.
+```
 
 🌞 **Effectuer une connexion SSH sur le nouveau port**
 
-- depuis votre PC
-- il faudra utiliser une option à la commande `ssh` pour vous connecter à la VM
+```
+[leobln@web ~]$ exit
+logout
+Connection to 10.1.1.1 closed.
+PS C:\Users\leobln> ssh -p 12899 leobln@10.1.1.1
+leobln@10.1.1.1's password:
+Last login: Mon Dec  2 14:59:32 2024 from 10.1.1.3
+[leobln@web ~]$
 
-> Je vous conseille de remettre le port par défaut une fois que cette partie est terminée.
+[leobln@web ~]$ sudo nano /etc/ssh/sshd_config
+[sudo] password for leobln:
+[leobln@web ~]$ sudo systemctl restart sshd
+[leobln@web ~]$ sudo firewall-cmd --permanent --remove-port=12899/tcp
+success
+[leobln@web ~]$ sudo firewall-cmd --permanent --add-port=22/tcp
+success
+[leobln@web ~]$ sudo firewall-cmd --reload
+success
+[leobln@web ~]$ exit
+logout
+Connection to 10.1.1.1 closed.
+PS C:\Users\leobln> ssh leobln@10.1.1.1
+leobln@10.1.1.1's password:
+Last login: Mon Dec  2 15:29:22 2024 from 10.1.1.3
+```
 
-✨ **Bonus : affiner la conf du serveur SSH**
-
-- faites vos plus belles recherches internet pour améliorer la conf de SSH
-- par "améliorer" on entend essentiellement ici : augmenter son niveau de sécurité
-- le but c'est pas de me rendre 10000 lignes de conf que vous pompez sur internet pour le bonus, mais de vous éveiller à divers aspects de SSH, la sécu ou d'autres choses liées
-
-![Such a hacker](./img/such_a_hacker.png)
-aa
