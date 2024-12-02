@@ -182,8 +182,6 @@ Last login: Mon Dec  2 15:29:22 2024 from 10.1.1.3
         listen       [::]:80;
 [leobln@web ~]$ sudo firewall-cmd --permanent --add-port=80/tcp
 success
-[leobln@web ~]$ sudo firewall-cmd --permanent --add-port=443/tcp
-success
 [leobln@web ~]$ sudo firewall-cmd --reload
 success
 [leobln@web ~]$ sudo firewall-cmd --list-all | grep ports
@@ -218,35 +216,46 @@ leobln:x:1000:1000:leobln:/home/leobln:/bin/bash
 
 🌞 **Déterminer le path du fichier de configuration de NGINX**
 
-- faites un `ls -al <PATH_VERS_LE_FICHIER>` pour le compte-rendu
-- la conf c'est dans `/etc/` normalement, comme toujours !
+```
+[leobln@web ~]$ ls -al /etc/nginx/nginx.conf
+-rw-r--r--. 1 root root 2334 Nov  8 17:43 /etc/nginx/nginx.conf
+```
 
 🌞 **Trouver dans le fichier de conf**
 
-- les lignes qui permettent de faire tourner un site web d'accueil (la page moche que vous avez vu avec votre navigateur)
-  - ce que vous cherchez, c'est un bloc `server { }` dans le fichier de conf
-  - vous ferez un `cat <FICHIER> | grep <TEXTE> -A X` pour me montrer les lignes concernées dans le compte-rendu
-    - l'option `-A X` permet d'afficher aussi les `X` lignes après chaque ligne trouvée par `grep`
-- une ligne qui commence par `include`
-  - cette ligne permet d'inclure d'autres fichiers
-  - bah ouais, on stocke pas toute la conf dans un seul fichier, sinon ça serait le bordel
-  - encore un `cat <FICHIER> | grep <TEXTE>` pour ne montrer que cette ligne
-- la ligne qui indique à NGINX qu'il doit s'exécuter en tant qu'un utilisateur spécifique
+```
+[leobln@web ~]$ cat /etc/nginx/nginx.conf | grep "server" -A 10
+[leobln@web ~]$ cat /etc/nginx/nginx.conf | grep "include"
+[leobln@web ~]$ cat /etc/nginx/nginx.conf | grep "user"
+```
 
 ## 3. Déployer un nouveau site web
 
 🌞 **Créer un site web**
 
-- bon on est pas en cours de design ici, alors on va faire simplissime
-- créer un sous-dossier dans `/var/www/`
-  - par convention, on stocke les sites web dans `/var/www/`
-  - votre dossier doit porter le nom `tp1_parc`
-- dans ce dossier `/var/www/tp1_parc`, créez un fichier `index.html`
-  - il doit contenir `<h1>MEOW mon premier serveur web</h1>`
+```
+[leobln@web ~]$ pwd
+/home/leobln
+[leobln@web ~]$ sudo mkdir /home/leobln/var
+[leobln@web ~]$ cd var
+[leobln@web var]$ sudo mkdir /home/leobln/var/www
+[leobln@web var]$ cd www
+[leobln@web www]$ sudo mkdir /home/leobln/var/www/tp1_parc
+[leobln@web www]$ cd tp1_parc
+[leobln@web tp1_parc]$ sudo nano index.html
+```
 
 🌞 **Gérer les permissions**
 
-- tout le contenu du dossier  `/var/www/tp1_parc` doit appartenir à l'utilisateur qui lance NGINX
+```
+[leobln@web tp1_parc]$ sudo chown -R nginx:nginx /home/leobln/var/www/tp1_
+parc
+[leobln@web tp1_parc]$ ls -al /home/leobln/var/www/tp1_parc
+total 4
+drwxr-xr-x. 2 nginx nginx 24 Dec  2 17:35 .
+drwxr-xr-x. 3 root  root  22 Dec  2 17:21 ..
+-rw-r--r--. 1 nginx nginx 38 Dec  2 17:35 index.html
+```
 
 🌞 **Adapter la conf NGINX**
 
