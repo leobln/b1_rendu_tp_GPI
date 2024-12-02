@@ -1,4 +1,4 @@
-# I. Service SSH lala
+# I. Service SSH
 
 🌞 **S'assurer que le service `sshd` est démarré**
 
