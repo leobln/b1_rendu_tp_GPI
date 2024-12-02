@@ -3,9 +3,28 @@
 🌞 **S'assurer que le service `sshd` est démarré**
 
 ```
-[leobln@web ~]$ systemctl status
-● web.tp1.b1
-    State: running
+[leobln@web ~]$ systemctl status sshd
+● sshd.service - OpenSSH server daemon
+     Loaded: loaded (/usr/lib/systemd/system/sshd.service; enabled; preset>
+     Active: active (running) since Mon 2024-12-02 15:34:25 CET; 25min ago
+       Docs: man:sshd(8)
+             man:sshd_config(5)
+   Main PID: 1537 (sshd)
+      Tasks: 1 (limit: 11083)
+     Memory: 3.4M
+        CPU: 213ms
+     CGroup: /system.slice/sshd.service
+             └─1537 "sshd: /usr/sbin/sshd -D [listener] 0 of 10-100 startu>
+Dec 02 15:34:25 web.tp1.b1 systemd[1]: Starting OpenSSH server daemon...
+Dec 02 15:34:25 web.tp1.b1 sshd[1537]: Server listening on 0.0.0.0 port 22.
+Dec 02 15:34:25 web.tp1.b1 sshd[1537]: Server listening on :: port 22.
+Dec 02 15:34:25 web.tp1.b1 systemd[1]: Started OpenSSH server daemon.
+Dec 02 15:35:10 web.tp1.b1 sshd[1551]: Accepted password for leobln from 1>
+Dec 02 15:35:10 web.tp1.b1 sshd[1551]: pam_unix(sshd:session): session ope>
+Dec 02 15:42:31 web.tp1.b1 sshd[1587]: Accepted password for leobln from 1>
+Dec 02 15:42:31 web.tp1.b1 sshd[1587]: pam_unix(sshd:session): session ope>
+Dec 02 15:57:54 web.tp1.b1 sshd[1655]: Accepted password for leobln from 1>
+Dec 02 15:57:54 web.tp1.b1 sshd[1655]: pam_unix(sshd:session): session ope>
 ```
 
 🌞 **Analyser les processus liés au service SSH**
