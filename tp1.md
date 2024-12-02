@@ -160,38 +160,59 @@ Last login: Mon Dec  2 15:29:22 2024 from 10.1.1.3
 
 🌞 **Installer le serveur NGINX**
 
-- il faut faire une commande `dnf install`
-- pour trouver le paquet à installer :
-  - `dnf search <VOTRE RECHERCHE>`
-  - ou une recherche Google (mais si `dnf search` suffit, c'est useless de faire une recherche pour ça)
+```
+[leobln@web ~]$ sudo dnf install nginx
+```
 
 🌞 **Démarrer le service NGINX**
 
+```
+[leobln@web ~]$ sudo systemctl start nginx
+[leobln@web ~]$ sudo systemctl status nginx
+● nginx.service - The nginx HTTP and reverse proxy server
+     Loaded: loaded (/usr/lib/systemd/system/nginx.service; enabled; prese>
+     Active: active (running)
+```
+
 🌞 **Déterminer sur quel port tourne NGINX**
 
-- vous devez filtrer la sortie de la commande utilisée pour n'afficher que les lignes demandées
-- ouvrez le port concerné dans le firewall
-
-> **NB : c'est bientôt la dernière fois que je signale explicitement la nécessité d'ouvrir un port dans le firewall.** Vous devrez vous-mêmes y penser lorsque nécessaire. C'est simple en vrai : dès qu'un truc écoute sur un port, faut ouvrir ce port dans le firewall. *Toutes les commandes liées au firewall doivent malgré tout figurer dans les compte-rendus.*
+```
+[leobln@web ~]$ grep listen /etc/nginx/nginx.conf
+        listen       80;
+        listen       [::]:80;
+[leobln@web ~]$ sudo firewall-cmd --permanent --add-port=80/tcp
+success
+[leobln@web ~]$ sudo firewall-cmd --permanent --add-port=443/tcp
+success
+[leobln@web ~]$ sudo firewall-cmd --reload
+success
+[leobln@web ~]$ sudo firewall-cmd --list-all | grep ports
+  ports: 22/tcp 80/tcp 443/tcp
+  forward-ports:
+  source-ports:
+```
 
 🌞 **Déterminer les processus liés au service NGINX**
 
-- vous devez filtrer la sortie de la commande utilisée pour n'afficher que les lignes demandées
+```
+[leobln@web ~]$ ps aux | grep nginx
+root        1878  0.0  0.0  11292  1464 ?        Ss   16:24   0:00 nginx: master process /usr/sbin/nginx
+nginx       1879  0.0  0.2  15532  4920 ?        S    16:24   0:00 nginx: worker process
+leobln      1957  0.0  0.1   6408  2176 pts/0    S+   16:49   0:00 grep --color=auto nginx
+```
 
 🌞 **Déterminer le nom de l'utilisateur qui lance NGINX**
 
-- vous devriez le voir dans la commande `ps` précédente
-- si l'utilisateur existe, alors il est listé dans le fichier `/etc/passwd`
-  - je veux un `cat /etc/passwd | grep <USER>` pour mettre en évidence l'utilisateur qui lance NGINX
+```
+[leobln@web ~]$ cat /etc/passwd | grep leobln
+leobln:x:1000:1000:leobln:/home/leobln:/bin/bash
+```
 
 🌞 **Test !**
 
-- visitez le site web
-  - ouvrez votre navigateur (sur votre PC) et visitez `http://<IP_VM>:<PORT>`
-  - vous pouvez aussi (toujours sur votre PC) utiliser la commande `curl` depuis un terminal pour faire une requête HTTP et visiter le site
-- dans le compte-rendu, je veux le `curl` (pas un screen de navigateur)
-  - utilisez Git Bash si vous êtes sous Windows (obligatoire parce que le `curl` de Powershell il fait des dingueries)
-  - vous utiliserez `| head` après le `curl` pour afficher que les 7 premières lignes
+```
+[leobln@web ~]$ curl http://10.1.1.1:80 | head -n 7
+```
 
 ## 2. Analyser la conf de NGINX
 
