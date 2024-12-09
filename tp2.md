@@ -69,6 +69,23 @@ leobln
 🌞 **Afficher le nombre de ports en écoute**
 
 ```
-[leobln@node1 ~]$ ss | wc -l
-70
+[leobln@node1 ~]$ sudo ss -ltupn | grep -v Netid | tr -s ' '  | grep -v '::'  | cut -d':' -f2 | cut -d' ' -f1 | wc -l
+3
 ```
+
+# Partie II : Un premier ptit script
+
+
+🌞 **Ecrire un script qui produit exactement l'affichage demandé**
+
+
+🌞 **Le script `id.sh` affiche l'état du firewall**
+
+🌞 **Le script `id.sh` affiche l'URL vers une photo de chat random**
+
+🌞 **Stocker le fichier `id.sh` dans `/opt`**
+
+🌞 **Prouvez que tout le monde peut exécuter le script**
+
+🌞 **Ajouter l'exécution au `.bashrc` de votre utilisateur**
+
