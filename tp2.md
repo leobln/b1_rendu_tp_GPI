@@ -180,4 +180,45 @@ le firewall est actife
 Voilà ta photo de chat https://cdn2.thecatapi.com/images/62t.jpg
 [leobln@node1 ~]$
 ```
+⭐ **BONUS** : propose un script `id.sh` un peu plus...
 
+```
+#!/bin/bash
+
+user=$(echo $USER)
+date=$(date +"%d/%m/%Y %H:%M:%S")
+shel=$(cat /etc/passwd | grep $USER | cut -d':' -f7)
+source /etc/os-release
+os=$(echo "$PRETTY_NAME")
+disque=$(df -h | grep 'root' | tr -s ' ' | cut -d ' ' -f4)
+inode=$(df -i | grep 'root' | tr -s ' ' | cut -d ' ' -f2)
+packet=$(rpm -qa | wc -l)
+port=$(sudo ss -ltupn | grep -v Netid | tr -s ' '  | grep -v '::'  | cut -d':' -f2 | cut -d' ' -f1 | wc -l)
+ram=$( free -h | grep 'Mem' | tr -s ' ' | cut -d ' ' -f7)
+karnel=$(uname -r)
+python=$(which python3)
+firewall=$(systemctl is-active firewalld)
+chat=$(curl https://api.thecatapi.com/v1/images/search -s | cut -d'"' -f8)
+
+echo -e "Salu a toa \e[1m$user\e[0m.
+Nouvelle connexion $date.
+Connecté avec le shell $shel.
+OS : $os - Kernel : $karnel
+Ressources :
+  - $ram RAM dispo
+  - $disque espace \e[34mdisque dispo\e[0m
+  - $inode fichiers restants
+Actuellement : 
+  - $packet paquets installés
+  - $port port(s) ouvert(s)
+\e[95mPython\e[0m est bien installé sur la machine au chemin : $python"
+
+if [[ $firewall -eq "active" ]]
+then
+    echo -e "\e[31mle firewall est actife\e[0m"
+else
+    echo "le firewall n'est pas actife"
+fi
+
+echo -e "Voilà ta photo de chat \e[1m$chat\e[0m "
+```
