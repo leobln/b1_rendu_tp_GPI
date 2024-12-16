@@ -259,32 +259,30 @@ drwxr-xr-x. 3 root  root  22 Dec  2 17:21 ..
 
 🌞 **Adapter la conf NGINX**
 
-- dans le fichier de conf principal
-  - vous supprimerez le bloc `server {}` repéré plus tôt pour que NGINX ne serve plus le site par défaut (parce que ça sert à rien le site par défaut)
-  - redémarrez NGINX pour que les changements prennent effet
-- créez un nouveau fichier de conf
-  - il doit être nommé correctement
-  - il doit être placé dans le bon dossier
-  - c'est quoi un "nom correct" et "le bon dossier" ?
-    - bah vous avez repéré dans la partie d'avant les fichiers qui sont inclus par le fichier de conf principal non ?
-    - créez votre fichier en conséquence
-  - redémarrez NGINX pour que les changements prennent effet
-  - le contenu doit être le suivant :
-    - il écoute sur un port que vous aurez déterminé aléatoirement avec `echo $RANDOM`
-      - n'oubliez pas d'ouvrir ce port dans le firewall, et fermer l'ancien
-    - il définit que le site web est stocké dans /var/www/tp1_parc
-
-```nginx
-server {
-  # le port choisi devra être obtenu avec un 'echo $RANDOM' là encore
-  listen <PORT>;
-
-  root /var/www/tp1_parc;
-}
+```
+sudo nano /etc/nginx/nginx.conf
+sudo systemctl restart nginx
+sudo nano /etc/nginx/conf.d/tp1_parc.conf
+[leobln@node1 tp1_parc]$ pwd
+/var/www/tp1_parc
+sudo systemctl restart nginx
+[leobln@node1 nginx]$ sudo firewall-cmd --permanent --add-port=264/tcp
+success
+[leobln@node1 nginx]$ sudo firewall-cmd --permanent --remove-port=80/tcp
+success
+[leobln@node1 nginx]$ sudo firewall-cmd --reload
+success
+[leobln@node1 tp1_parc]$ pwd
+/var/www/tp1_parc
+[leobln@node1 tp1_parc]$ ls
+index.html
 ```
 
 🌞 **Visitez votre super site web**
 
-- toujours avec une commande `curl` depuis votre PC (ou un navigateur)
+```
+curl localhost:264
+yo leo
+```
 
 
