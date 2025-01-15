@@ -102,8 +102,9 @@ log "INFO" "Le script d'autoconfiguration s'est correctement déroulé"
 ```
 [leobln@music ~]$ cd /srv
 [leobln@music srv]$ sudo mkdir music
-[leobln@music srv]$ ls
-music
+[leobln@music var]$ ls
+adm  cache  crash  db  empty  ftp  games  kerberos  lib  local  lock  log  mail  music  nis  opt  preserve  run  spool  tmp  www
+
 ```
 
 🌞 **Déposez quelques fichiers son là dedans**
@@ -125,32 +126,45 @@ Yehezkel Raz - Ballerina.mp3              100% 2807KB  44.9MB/s   00:00
 
 🌞 **Ajoutez les dépôts nécessaires pour installer Jellyfin**
 
-```bash
-sudo dnf install --nogpgcheck https://mirrors.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-$(rpm -E %rhel).noarch.rpm -y
-sudo dnf config-manager --set-enabled crb
+```
+[leobln@music ~]$ sudo dnf install --nogpgcheck https://mirrors.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-$(rpm -E %rhel).noarch.rpm -y
+[leobln@music ~]$ sudo dnf config-manager --set-enabled crb
 ```
 
 🌞 **Installer le paquet `jellyfin`**
 
-- avec une commande `dnf install` toujours hein
+```
+[leobln@music ~]$ sudo dnf install -y jellyfin
+```
 
 🌞 **Lancer le service `jellyfin`**
 
+```
+[leobln@music ~]$ sudo systemctl start jellyfin
+```
+
 🌞 **Afficher la liste des ports TCP en écoute**
 
-- isolez la ligne qui concerne Jellyfin une fois que vous l'avez repérée (avec un `| grep...`)
+```
+ sudo ss -tulnp | grep LISTEN | grep jellyfin
+tcp   LISTEN 0      512          0.0.0.0:8096       0.0.0.0:*    users:(("jellyfin",pid=15891,fd=310))
+```
 
 🌞 **Ouvrir le port derrière lequel Jellyfin écoute**
 
-- le port que tu viens de repérers
-- dans le firewall
-- comme ça des clients (toi) pourront s'y connecter
+```
+[leobln@music ~]$ sudo firewall-cmd --add-port=8096/tcp --permanent
+success
+[leobln@music ~]$ sudo firewall-cmd --reload
+success
+```
 
 🌞 **Visitez l'interface Web !**
 
-- depuis ton ordi, ton OS (pas la VM) t'ouvres un navigateur, et tu visites `http://IP_VM:PORT`
-- **paf ! Jellyfin**
-  - tu devrais pouvoir configurer le dossier où est la musique à la première connexion
-  - te créer un user et un mot de passe étou
-  - **puis écouter du son !** 🎵🎵🎵
-- je veux un `curl` dans le compte-rendu
+```
+[leobln@music ~]$  curl -I http://10.3.1.11:8096
+HTTP/1.1 302 Found
+Date: Wed, 15 Jan 2025 11:40:45 GMT
+Server: Kestrel
+Location: /web/index.html
+```
