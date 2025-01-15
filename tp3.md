@@ -168,3 +168,48 @@ Date: Wed, 15 Jan 2025 11:40:45 GMT
 Server: Kestrel
 Location: /web/index.html
 ```
+
+# Partie III : Serveur de monitoring
+
+🌞 **Dérouler le script `autoconfig.sh` développé à la partie I**
+
+```
+[leobln@music ~]$ scp /home/leobln/autoconfig/autoconfig.sh leobln@10.
+3.1.12:/tmp/
+
+[leobln@monitoring ~]$ cd /tmp/
+[leobln@monitoring tmp]$ ls
+autoconfig.sh
+
+[leobln@monitoring tmp]$ sudo bash autoconfig.sh
+[sudo] password for leobln:
+12:56:49 [INFO] Le script d'autoconfiguration a démarré
+12:56:49 [INFO] Le script a bien été lancé en root
+12:56:49 [INFO] Le firewall est activé
+12:56:49 [WARN] Le service SSH tourne toujours sur le port 22/TCP
+12:56:49 [Modification du fichier de configuration SSH pour écouter sur le port 29986]
+12:56:49 [INFO] Redémarrage du service SSH
+12:56:49 [INFO] Ouverture du port 29986/TCP dans firewalld
+12:56:51 [WARN] La machine s'appelle toujours monitoring.tp3.b1
+12:56:51 [INFO] Changement du nom pour music.tp3.b3
+12:56:51 [INFO] leobln est dans le groupe wheel
+12:56:51 [INFO] Le script d'autoconfiguration s'est correctement déroulé
+```
+
+🌞 **Installer Netdata**
+
+```
+ 
+```
+
+🌞 **Ajouter un check TCP**
+
+```
+
+```
+
+🌞 **Ajout d'une alerte Discord**
+
+```
+
+```
