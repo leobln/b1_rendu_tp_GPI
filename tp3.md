@@ -199,13 +199,24 @@ autoconfig.sh
 🌞 **Installer Netdata**
 
 ```
- 
+[leobln@music ~]$ sudo dnf install epel-release -y
+[leobln@music ~]$ curl https://get.netdata.cloud/kickstart.sh > /tmp/netdata-kickstart.sh && sh /tmp/netdata-kickstart.sh --nightly-channel
 ```
 
 🌞 **Ajouter un check TCP**
 
 ```
-
+ sudo ss -tulnp | grep netdata
+udp   UNCONN 0      0          127.0.0.1:8125       0.0.0.0:*    users:(("netdata",pid=22992,fd=59))
+udp   UNCONN 0      0              [::1]:8125          [::]:*    users:(("netdata",pid=22992,fd=58))
+tcp   LISTEN 0      4096         0.0.0.0:19999      0.0.0.0:*    users:(("netdata",pid=22992,fd=6))
+tcp   LISTEN 0      4096       127.0.0.1:8125       0.0.0.0:*    users:(("netdata",pid=22992,fd=61))
+tcp   LISTEN 0      4096            [::]:19999         [::]:*    users:(("netdata",pid=22992,fd=7))
+tcp   LISTEN 0      4096           [::1]:8125          [::]:*    users:(("netdata",pid=22992,fd=60))
+[leobln@music netdata]$ sudo firewall-cmd --add-port=19999/tcp --permanent
+success
+[leobln@music netdata]$ sudo firewall-cmd --reload
+success
 ```
 
 🌞 **Ajout d'une alerte Discord**
